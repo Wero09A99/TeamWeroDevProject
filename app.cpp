@@ -4,7 +4,6 @@
 #include <vector>
 using namespace std;
 //reconecta app
-
 // Codigos de color ANSI
 const string RESET   = "\033[0m";
 const string NEGRITA = "\033[1m";
@@ -19,21 +18,17 @@ const string BG_AZUL = "\033[44m";
 const string BG_VERDE= "\033[42m";
 const string BG_ROJO = "\033[41m";
 const string BG_AMARILLO = "\033[43m";
-
-
 const double LIMITE_SEMANAL_COMIDA  = 150.0;  // uds/semana (alta rotacion de empaques)
 const double LIMITE_SEMANAL_TIENDA  = 200.0;  // uds/semana
 const double LIMITE_SEMANAL_MERCADO = 300.0;  // uds/semana (mayor volumen)
 const double LIMITE_DIARIO_COMIDA   = 22.0;   // uds/dia  (~150/7)
 const double LIMITE_DIARIO_TIENDA   = 29.0;   // uds/dia  (~200/7)
 const double LIMITE_DIARIO_MERCADO  = 43.0;   // uds/dia  (~300/7)
-
 // Funcion: mostrar consejos segun nivel y tipo de establecimiento
 void mostrarConsejos(int tipo, double porcentaje) {
     cout << "\n" << BG_AMARILLO << BLANCO << NEGRITA;
     cout << "  RECOMENDACIONES PARA TU ESTABLECIMIENTO  ";
     cout << RESET << "\n";
-
     //Consejos generales por nivel de contaminacion
     if (porcentaje < 20.0) {
         cout << VERDE << NEGRITA << "\n  [OK] Nivel BAJO - Sigue con estas buenas practicas:\n" << RESET;
@@ -54,10 +49,8 @@ void mostrarConsejos(int tipo, double porcentaje) {
         cout << "  * Elaborar un Plan de Manejo de Residuos (obligatorio si\n";
         cout << "    supera 10 toneladas/anio segun NOM-161-SEMARNAT-2011).\n" << RESET;
     }
-
     //Consejos especificos por tipo de establecimiento
     cout << "\n" << CIAN << NEGRITA << "  Consejos especificos para tu tipo de negocio:\n" << RESET;
-
     switch (tipo) {
         case 1: // Comida
             cout << CIAN;
@@ -69,7 +62,6 @@ void mostrarConsejos(int tipo, double porcentaje) {
             cout << "           (precio aprox. $3-5 MXN/kg en mercado actual).\n";
             cout << RESET;
             break;
-
         case 2: // Tienda
             cout << CIAN;
             cout << "  [Tienda] Prefiere proveedores con empaques de PET reciclado (rPET).\n";
@@ -80,7 +72,6 @@ void mostrarConsejos(int tipo, double porcentaje) {
             cout << "           y busca alternativas con menos PET por unidad.\n";
             cout << RESET;
             break;
-
         case 3: // Mercado
             cout << CIAN;
             cout << "  [Mercado] Implementa un punto de acopio de PET centralizado\n";
@@ -93,7 +84,6 @@ void mostrarConsejos(int tipo, double porcentaje) {
             cout << RESET;
             break;
     }
-
     // --- Informacion normativa ---
     cout << "\n" << MAGENTA << NEGRITA << "  Informacion normativa:\n" << RESET;
     cout << MAGENTA;
@@ -105,14 +95,11 @@ void mostrarConsejos(int tipo, double porcentaje) {
     cout << "    minimo (Art. 135 LGPGIR).\n";
     cout << RESET;
 }
-
 // Funcion: verificar y alertar limite de PET por tipo
 void verificarLimitePET(int tipo, double petUtilizadoDia, double petDesperdiciado,
                         double petUtilizadoSemana, int diasOperados) {
-
     double limiteDiario, limiteSemanal;
     string nombreTipo;
-
     switch (tipo) {
         case 1:
             limiteDiario   = LIMITE_DIARIO_COMIDA;
@@ -130,7 +117,6 @@ void verificarLimitePET(int tipo, double petUtilizadoDia, double petDesperdiciad
             nombreTipo     = "mercado";
             break;
     }
-
     // Alerta diaria
     if (petUtilizadoDia > limiteDiario) {
         cout << ROJO << NEGRITA
@@ -139,14 +125,12 @@ void verificarLimitePET(int tipo, double petUtilizadoDia, double petDesperdiciad
              << nombreTipo << " (" << limiteDiario << " uds).\n"
              << RESET;
     }
-
     // Alerta desperdicio critico diario
     if (petDesperdiciado > (limiteDiario * 0.5)) {
         cout << AMARILLO << NEGRITA
              << "    [AVISO]  PET desperdiciado hoy es elevado. Revisa causas.\n"
              << RESET;
     }
-
     // Alerta semanal acumulada (solo si ya hay datos)
     if (petUtilizadoSemana > limiteSemanal) {
         cout << ROJO << NEGRITA
@@ -156,11 +140,8 @@ void verificarLimitePET(int tipo, double petUtilizadoDia, double petDesperdiciad
              << RESET;
     }
 }
-
 int main() {
-
     cout << fixed << setprecision(2);
-
     // Pantalla de bienvenida
     cout << "\n" << BG_AZUL << BLANCO << NEGRITA;
     cout << "   SISTEMA DE CONTROL DE CONTAMINACION PET   ";
@@ -168,7 +149,6 @@ int main() {
     cout << CIAN << "  Registro de establecimientos y calculo de residuos\n" << RESET;
     cout << AMARILLO << "  Version 3.0 - Limites NOM-161 y consejos de mejora\n" << RESET;
     cout << "\n";
-
     // Variables globales
     int    totalEstablecimientos      = 0;
     int    totalReportes              = 0;
@@ -177,7 +157,6 @@ int main() {
     int    totalComida   = 0;
     int    totalTienda   = 0;
     int    totalMercado  = 0;
-
     // Nombre del encargado
     string nombreEncargado;
     cout << NEGRITA << BLANCO << "Ingrese el nombre del encargado del registro: " << RESET;
@@ -185,28 +164,21 @@ int main() {
     getline(cin, nombreEncargado);
     if (nombreEncargado.empty()) nombreEncargado = "Sin nombre";
     cout << VERDE << "  Bienvenido/a, " << nombreEncargado << "!\n" << RESET;
-
     char registrarOtro = 's';
-
     while (registrarOtro == 's' || registrarOtro == 'S') {
-
         totalEstablecimientos++;
-
         cout << "\n" << BG_AZUL << BLANCO << NEGRITA;
         cout << "  ESTABLECIMIENTO #" << totalEstablecimientos << "  ";
         cout << RESET << "\n";
-
         // Nombre del establecimiento
         string nombreEstablecimiento;
         cout << AZUL << NEGRITA << "Nombre del establecimiento: " << RESET;
         cin.ignore();
         getline(cin, nombreEstablecimiento);
         if (nombreEstablecimiento.empty()) nombreEstablecimiento = "Sin nombre";
-
         // Tipo de establecimiento
         int  tipoEstablecimiento = 0;
         bool tipoValido = false;
-
         while (!tipoValido) {
             cout << "\n" << NEGRITA << CIAN << "Tipo de establecimiento:\n" << RESET;
             cout << AMARILLO << "  [1]" << RESET << " Establecimiento de comida"
@@ -217,7 +189,6 @@ int main() {
                  << AZUL << " (limite: " << LIMITE_SEMANAL_MERCADO << " uds/sem)\n" << RESET;
             cout << NEGRITA << "Opcion: " << RESET;
             cin >> tipoEstablecimiento;
-
             if (cin.fail()) {
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -228,7 +199,6 @@ int main() {
                 tipoValido = true;
             }
         }
-
         string nombreTipo;
         double limiteSemanalTipo, limiteDiarioTipo;
         switch (tipoEstablecimiento) {
@@ -255,16 +225,13 @@ int main() {
         cout << AZUL  << "  Limite semanal : " << limiteSemanalTipo << " uds  |  "
              << "Limite diario: " << limiteDiarioTipo << " uds\n" << RESET;
         cout << MAGENTA << "  (Referencia: NOM-161-SEMARNAT-2011)\n" << RESET;
-
         // Dias de operacion
         int  diasSemana = 0;
         bool diasValidos = false;
-
         while (!diasValidos) {
             cout << "\n" << CIAN << "Dias a la semana que opera el establecimiento " << RESET;
             cout << AMARILLO << "(1-7): " << RESET;
             cin >> diasSemana;
-
             if (cin.fail()) {
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -275,18 +242,14 @@ int main() {
                 diasValidos = true;
             }
         }
-
         // Horario personalizado
         int horaInicio = 0;
         int horaFin = 0;
         bool horarioValido = false;
-
         cout << "\n" << NEGRITA << CIAN << "Horario personalizado del establecimiento:\n" << RESET;
-        
         while (!horarioValido) {
             cout << AMARILLO << "  Hora de inicio (0-23): " << RESET;
             cin >> horaInicio;
-
             if (cin.fail() || horaInicio < 0 || horaInicio > 23) {
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -294,10 +257,8 @@ int main() {
                 horaInicio = -1;
                 continue;
             }
-
             cout << AMARILLO << "  Hora de cierre (0-23): " << RESET;
             cin >> horaFin;
-
             if (cin.fail() || horaFin < 0 || horaFin > 23) {
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -305,17 +266,14 @@ int main() {
                 horaFin = -1;
                 continue;
             }
-
             if (horaInicio == horaFin) {
                 cout << ROJO << "  [!] La hora de cierre no puede ser igual a la de inicio.\n" << RESET;
                 horaInicio = -1;
                 horaFin = -1;
                 continue;
             }
-
             horarioValido = true;
         }
-
         // Calcular turno basado en horario
         string nombreTurno;
         if (horaFin < horaInicio) {
@@ -330,11 +288,9 @@ int main() {
         } else {
             nombreTurno = "Turno mixto";
         }
-
         cout << VERDE << "  Horario registrado: " << NEGRITA << horaInicio << ":00 - " 
              << horaFin << ":00" << RESET << "\n";
         cout << VERDE << "  Turno calculado: " << NEGRITA << nombreTurno << RESET << "\n";
-
         // Captura diaria de PET
         double petUtilizadoSemana      = 0.0;
         double petDesperdiaciadoSemana = 0.0;
@@ -343,19 +299,14 @@ int main() {
         vector<int> diasMayorDesperdicio;
         double mayorDesperdicio    = 0.0;
         int    diasSuperanLimite   = 0;
-
         cout << "\n" << NEGRITA << MAGENTA << "Ingreso de datos diarios de PET\n" << RESET;
-
         for (int dia = 1; dia <= diasSemana; dia++) {
-
             cout << "\n" << AZUL << NEGRITA << "  Dia " << dia << ":\n" << RESET;
-
             // PET utilizado
             double petDiaUtilizado = -1.0;
             while (petDiaUtilizado < 0) {
                 cout << CIAN << "    PET utilizado (unidades): " << RESET;
                 cin >> petDiaUtilizado;
-
                 if (cin.fail()) {
                     cin.clear();
                     cin.ignore(1000, '\n');
@@ -370,13 +321,11 @@ int main() {
                     petDiaUtilizado = -1.0;
                 }
             }
-
             // PET desperdiciado
             double petDiaDesperdiciado = -1.0;
             while (petDiaDesperdiciado < 0) {
                 cout << CIAN << "    PET desperdiciado (unidades): " << RESET;
                 cin >> petDiaDesperdiciado;
-
                 if (cin.fail()) {
                     cin.clear();
                     cin.ignore(1000, '\n');
@@ -395,22 +344,17 @@ int main() {
                     petDiaDesperdiciado = -1.0;
                 }
             }
-
             // Acumulados antes de verificar limite semanal
             petUtilizadoSemana      += petDiaUtilizado;
             petDesperdiaciadoSemana += petDiaDesperdiciado;
-
             // --- VERIFICACION DE LIMITES ---
             verificarLimitePET(tipoEstablecimiento, petDiaUtilizado, petDiaDesperdiciado,
                                petUtilizadoSemana, dia);
-
             if (petDiaUtilizado > limiteDiarioTipo) diasSuperanLimite++;
-
             // Estadisticas del dia
             double pctDia = (petDiaUtilizado > 0)
                             ? (petDiaDesperdiciado / petDiaUtilizado) * 100.0
                             : 0.0;
-
             // Barra visual
             int barras = (int)(pctDia / 5);
             cout << "    Estado del dia: [";
@@ -421,18 +365,15 @@ int main() {
                     cout << VERDE << "|" << RESET;
             }
             cout << "] " << AMARILLO << pctDia << "% desperdicio\n" << RESET;
-
             // Alerta desperdicio >50%
             if (pctDia > 50.0) {
                 cout << ROJO << NEGRITA
                      << "    [ALERTA] Desperdicio critico este dia (>50%)\n"
                      << RESET;
             }
-
             // Max y min
             if (petDiaUtilizado > petMaxDia) petMaxDia = petDiaUtilizado;
             if (petMinDia < 0 || petDiaUtilizado < petMinDia) petMinDia = petDiaUtilizado;
-
             if (petDiaDesperdiciado > mayorDesperdicio) {
                 mayorDesperdicio = petDiaDesperdiciado;
                 diasMayorDesperdicio.clear();
@@ -441,20 +382,16 @@ int main() {
                 diasMayorDesperdicio.push_back(dia);
             }
         }
-
         // Calculos semanales
         double petAprovechadoSemana      = petUtilizadoSemana - petDesperdiaciadoSemana;
         double porcentajeContaminacion   = 0.0;
         double porcentajeAprovechamiento = 0.0;
-
         if (petUtilizadoSemana > 0) {
             porcentajeContaminacion   = (petDesperdiaciadoSemana / petUtilizadoSemana) * 100.0;
             porcentajeAprovechamiento = (petAprovechadoSemana    / petUtilizadoSemana) * 100.0;
         }
-
         double promedioDiarioUtilizado    = petUtilizadoSemana    / diasSemana;
         double promedioDiarioDesperdiciado = petDesperdiaciadoSemana / diasSemana;
-
         // Clasificacion nivel
         string nivelContaminacion;
         string colorNivel;
@@ -468,18 +405,14 @@ int main() {
             nivelContaminacion = "CRITICO";
             colorNivel = ROJO;
         }
-
         totalReportes++;
-
         // ===================== REPORTE =====================
         cout << "\n" << BG_VERDE << BLANCO << NEGRITA;
         cout << "  REPORTE: " << nombreEstablecimiento << "  ";
         cout << RESET << "\n";
-
         cout << NEGRITA << BLANCO << "  Tipo          : " << RESET << nombreTipo  << "\n";
         cout << NEGRITA << BLANCO << "  Turno         : " << RESET << nombreTurno << "\n";
         cout << NEGRITA << BLANCO << "  Dias operados : " << RESET << diasSemana << " dia(s)\n";
-
         cout << "\n" << NEGRITA << CIAN << "  Limites de uso (NOM-161-SEMARNAT-2011):\n" << RESET;
         cout << "  Limite semanal recomendado: " << AZUL  << limiteSemanalTipo << " uds\n" << RESET;
         cout << "  Limite diario recomendado : " << AZUL  << limiteDiarioTipo  << " uds\n" << RESET;
@@ -488,7 +421,6 @@ int main() {
             cout << VERDE << "Ninguno\n" << RESET;
         else
             cout << ROJO << NEGRITA << diasSuperanLimite << " dia(s)\n" << RESET;
-
         // Estado semanal vs limite
         cout << "  Estado vs limite semanal  : ";
         if (petUtilizadoSemana <= limiteSemanalTipo)
@@ -497,16 +429,13 @@ int main() {
         else
             cout << ROJO << NEGRITA << "SUPERA EL LIMITE (" << petUtilizadoSemana
                  << "/" << limiteSemanalTipo << ")\n" << RESET;
-
         cout << "\n" << NEGRITA << CIAN << "  Resumen semanal de PET:\n" << RESET;
         cout << "  PET utilizado total       : " << VERDE  << NEGRITA << petUtilizadoSemana      << " uds\n" << RESET;
         cout << "  PET desperdiciado total   : " << ROJO   << NEGRITA << petDesperdiaciadoSemana << " uds\n" << RESET;
         cout << "  PET aprovechado total     : " << VERDE  << petAprovechadoSemana               << " uds\n" << RESET;
-
         cout << "\n" << NEGRITA << CIAN << "  Promedios diarios:\n" << RESET;
         cout << "  Promedio utilizado/dia    : " << AZUL    << promedioDiarioUtilizado    << " uds\n" << RESET;
         cout << "  Promedio desperdiciado/dia: " << AMARILLO << promedioDiarioDesperdiciado << " uds\n" << RESET;
-
         cout << "\n" << NEGRITA << CIAN << "  Estadisticas:\n" << RESET;
         cout << "  Dias mayor desperdicio    : " << AMARILLO;
         for (int i = 0; i < diasMayorDesperdicio.size(); i++) {
@@ -516,12 +445,10 @@ int main() {
         cout << " (" << mayorDesperdicio << " uds)\n" << RESET;
         cout << "  Max PET utilizado en dia  : " << VERDE   << petMaxDia << " uds\n" << RESET;
         cout << "  Min PET utilizado en dia  : " << AZUL    << petMinDia << " uds\n" << RESET;
-
         cout << "\n" << NEGRITA << CIAN << "  Indicadores:\n" << RESET;
         cout << "  % Contaminacion por semana: " << colorNivel << NEGRITA << porcentajeContaminacion << "%" << RESET << "\n";
         cout << "  % Aprovechamiento         : " << VERDE  << porcentajeAprovechamiento << "%\n" << RESET;
         cout << "  Nivel de contaminacion    : " << colorNivel << NEGRITA << nivelContaminacion << "\n" << RESET;
-
         // Barra global
         int barrasTotal = (int)(porcentajeContaminacion / 5);
         cout << "\n  Contaminacion semanal: [";
@@ -532,20 +459,16 @@ int main() {
                 cout << VERDE << "|" << RESET;
         }
         cout << "] " << colorNivel << NEGRITA << porcentajeContaminacion << "%\n" << RESET;
-
         // ===================== CONSEJOS =====================
         mostrarConsejos(tipoEstablecimiento, porcentajeContaminacion);
-
         grandTotalPetUtilizado     += petUtilizadoSemana;
         grandTotalPetDesperdiciado += petDesperdiaciadoSemana;
-
         // Preguntar si registra otro
         bool respuestaValida = false;
         while (!respuestaValida) {
             cout << "\n" << NEGRITA << AMARILLO
                  << "Desea registrar otro establecimiento? (s/n): " << RESET;
             cin >> registrarOtro;
-
             if (cin.fail()) {
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -557,19 +480,15 @@ int main() {
                 respuestaValida = true;
             }
         }
-
     } // fin while
-
     // ===================== REPORTE FINAL =====================
     double porcentajeFinalContaminacion   = 0.0;
     double porcentajeFinalAprovechamiento = 0.0;
     double petRecuperableFinal = grandTotalPetUtilizado - grandTotalPetDesperdiciado;
-
     if (grandTotalPetUtilizado > 0) {
         porcentajeFinalContaminacion   = (grandTotalPetDesperdiciado / grandTotalPetUtilizado) * 100.0;
         porcentajeFinalAprovechamiento = (petRecuperableFinal        / grandTotalPetUtilizado) * 100.0;
     }
-
     string nivelFinal;
     string colorFinal;
     if (porcentajeFinalContaminacion < 20.0) {
@@ -582,29 +501,23 @@ int main() {
         nivelFinal = "CRITICO - Se requieren acciones urgentes";
         colorFinal = ROJO;
     }
-
     cout << "\n\n" << BG_ROJO << BLANCO << NEGRITA;
     cout << "   REPORTE FINAL DEL PROGRAMA   ";
     cout << RESET << "\n";
-
     cout << NEGRITA << BLANCO << "  Encargado     : " << RESET << nombreEncargado << "\n";
     cout << NEGRITA << BLANCO << "  Total reportes: " << RESET << totalReportes << "\n";
-
     cout << "\n" << NEGRITA << CIAN << "  Establecimientos registrados:\n" << RESET;
     cout << "  De comida   : " << AMARILLO << totalComida  << RESET << "\n";
     cout << "  Tiendas     : " << AMARILLO << totalTienda  << RESET << "\n";
     cout << "  Mercados    : " << AMARILLO << totalMercado << RESET << "\n";
     cout << "  TOTAL       : " << NEGRITA << BLANCO << totalEstablecimientos << RESET << "\n";
-
     cout << "\n" << NEGRITA << CIAN << "  Totales globales de PET:\n" << RESET;
     cout << "  Total utilizado      : " << VERDE  << NEGRITA << grandTotalPetUtilizado      << " uds\n" << RESET;
     cout << "  Total desperdiciado  : " << ROJO   << NEGRITA << grandTotalPetDesperdiciado   << " uds\n" << RESET;
     cout << "  Total aprovechado    : " << VERDE  << petRecuperableFinal                     << " uds\n" << RESET;
-
     cout << "\n" << NEGRITA << CIAN << "  Indicadores globales:\n" << RESET;
     cout << "  % Contaminacion global  : " << colorFinal << NEGRITA << porcentajeFinalContaminacion  << "%\n" << RESET;
     cout << "  % Aprovechamiento global: " << VERDE      << NEGRITA << porcentajeFinalAprovechamiento << "%\n" << RESET;
-
     // Barra final
     int barrasFinal = (int)(porcentajeFinalContaminacion / 5);
     cout << "\n  Indice global: [";
@@ -615,9 +528,7 @@ int main() {
             cout << VERDE << "|" << RESET;
     }
     cout << "]\n";
-
     cout << "\n  " << colorFinal << NEGRITA << "Nivel: " << nivelFinal << RESET << "\n";
-
     // Consejo final global
     if (porcentajeFinalContaminacion >= 20.0) {
         cout << "\n" << BG_AMARILLO << BLANCO << NEGRITA;
@@ -632,10 +543,8 @@ int main() {
             cout << "  la NOM-161-SEMARNAT-2011 y la LGPGIR.\n" << RESET;
         }
     }
-
     cout << "\n" << BG_AZUL << BLANCO << NEGRITA;
     cout << "   Fin del programa. Gracias, " << nombreEncargado << "!   ";
     cout << RESET << "\n\n";
-
     return 0;
 }
