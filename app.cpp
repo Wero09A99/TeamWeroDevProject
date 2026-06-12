@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <vector>
 using namespace std;
+//reconecta app
 
 // Codigos de color ANSI
 const string RESET   = "\033[0m";
@@ -18,15 +20,7 @@ const string BG_VERDE= "\033[42m";
 const string BG_ROJO = "\033[41m";
 const string BG_AMARILLO = "\033[43m";
 
-// ============================================================
-//  LIMITES DE PET POR TIPO DE ESTABLECIMIENTO
-//  Fuente: NOM-161-SEMARNAT-2011 (SEMARNAT / DOF 01-Feb-2013)
-//  Umbral de Residuo de Manejo Especial: 10 ton/año = ~192 uds/semana
-//  (asumiendo envase PET promedio de 500g = 0.5 kg)
-//  Comida: mayor rotacion de empaques -> limite mas bajo
-//  Tienda: rotacion media                -> limite intermedio
-//  Mercado: gran volumen, muchos locales  -> limite alto
-// ============================================================
+
 const double LIMITE_SEMANAL_COMIDA  = 150.0;  // uds/semana (alta rotacion de empaques)
 const double LIMITE_SEMANAL_TIENDA  = 200.0;  // uds/semana
 const double LIMITE_SEMANAL_MERCADO = 300.0;  // uds/semana (mayor volumen)
@@ -40,7 +34,7 @@ void mostrarConsejos(int tipo, double porcentaje) {
     cout << "  RECOMENDACIONES PARA TU ESTABLECIMIENTO  ";
     cout << RESET << "\n";
 
-    // --- Consejos generales por nivel de contaminacion ---
+    //Consejos generales por nivel de contaminacion
     if (porcentaje < 20.0) {
         cout << VERDE << NEGRITA << "\n  [OK] Nivel BAJO - Sigue con estas buenas practicas:\n" << RESET;
         cout << VERDE << "  * Mantiene registros semanales para detectar cambios a tiempo.\n";
@@ -61,7 +55,7 @@ void mostrarConsejos(int tipo, double porcentaje) {
         cout << "    supera 10 toneladas/anio segun NOM-161-SEMARNAT-2011).\n" << RESET;
     }
 
-    // --- Consejos especificos por tipo de establecimiento ---
+    //Consejos especificos por tipo de establecimiento
     cout << "\n" << CIAN << NEGRITA << "  Consejos especificos para tu tipo de negocio:\n" << RESET;
 
     switch (tipo) {
@@ -282,44 +276,71 @@ int main() {
             }
         }
 
-        // Turno
-        int  turno = 0;
-        bool turnoValido = false;
+        // Horario personalizado
+        int horaInicio = 0;
+        int horaFin = 0;
+        bool horarioValido = false;
 
-        while (!turnoValido) {
-            cout << "\n" << NEGRITA << CIAN << "Turno de operacion:\n" << RESET;
-            cout << AMARILLO << "  [1]" << RESET << " Matutino  (6am - 2pm)\n";
-            cout << AMARILLO << "  [2]" << RESET << " Vespertino (2pm - 10pm)\n";
-            cout << AMARILLO << "  [3]" << RESET << " Nocturno  (10pm - 6am)\n";
-            cout << AMARILLO << "  [4]" << RESET << " Tiempo completo (24h)\n";
-            cout << NEGRITA << "Opcion: " << RESET;
-            cin >> turno;
+        cout << "\n" << NEGRITA << CIAN << "Horario personalizado del establecimiento:\n" << RESET;
+        
+        while (!horarioValido) {
+            cout << AMARILLO << "  Hora de inicio (0-23): " << RESET;
+            cin >> horaInicio;
 
-            if (cin.fail()) {
+            if (cin.fail() || horaInicio < 0 || horaInicio > 23) {
                 cin.clear();
                 cin.ignore(1000, '\n');
-                cout << ROJO << "  [!] Entrada invalida. Ingrese 1, 2, 3 o 4.\n" << RESET;
-            } else if (turno < 1 || turno > 4) {
-                cout << ROJO << "  [!] Opcion fuera de rango.\n" << RESET;
-            } else {
-                turnoValido = true;
+                cout << ROJO << "  [!] Ingrese una hora valida (0-23).\n" << RESET;
+                horaInicio = -1;
+                continue;
             }
+
+            cout << AMARILLO << "  Hora de cierre (0-23): " << RESET;
+            cin >> horaFin;
+
+            if (cin.fail() || horaFin < 0 || horaFin > 23) {
+                cin.clear();
+                cin.ignore(1000, '\n');
+                cout << ROJO << "  [!] Ingrese una hora valida (0-23).\n" << RESET;
+                horaFin = -1;
+                continue;
+            }
+
+            if (horaInicio == horaFin) {
+                cout << ROJO << "  [!] La hora de cierre no puede ser igual a la de inicio.\n" << RESET;
+                horaInicio = -1;
+                horaFin = -1;
+                continue;
+            }
+
+            horarioValido = true;
         }
 
+        // Calcular turno basado en horario
         string nombreTurno;
-        switch (turno) {
-            case 1: nombreTurno = "Matutino";        break;
-            case 2: nombreTurno = "Vespertino";      break;
-            case 3: nombreTurno = "Nocturno";        break;
-            case 4: nombreTurno = "Tiempo completo"; break;
+        if (horaFin < horaInicio) {
+            // Caso nocturno (ej: 22:00 - 06:00)
+            nombreTurno = "Nocturno";
+        } else if (horaInicio >= 6 && horaInicio < 12 && horaFin <= 14) {
+            nombreTurno = "Matutino";
+        } else if (horaInicio >= 12 && horaInicio < 17 && horaFin <= 22) {
+            nombreTurno = "Vespertino";
+        } else if ((horaFin - horaInicio) >= 16) {
+            nombreTurno = "Tiempo completo";
+        } else {
+            nombreTurno = "Turno mixto";
         }
+
+        cout << VERDE << "  Horario registrado: " << NEGRITA << horaInicio << ":00 - " 
+             << horaFin << ":00" << RESET << "\n";
+        cout << VERDE << "  Turno calculado: " << NEGRITA << nombreTurno << RESET << "\n";
 
         // Captura diaria de PET
         double petUtilizadoSemana      = 0.0;
         double petDesperdiaciadoSemana = 0.0;
         double petMaxDia    = 0.0;
         double petMinDia    = -1.0;
-        int    diaMayorDesperdicio = 0;
+        vector<int> diasMayorDesperdicio;
         double mayorDesperdicio    = 0.0;
         int    diasSuperanLimite   = 0;
 
@@ -342,6 +363,11 @@ int main() {
                     cout << ROJO << "    [!] Ingrese un numero valido >= 0.\n" << RESET;
                 } else if (petDiaUtilizado < 0) {
                     cout << ROJO << "    [!] El valor no puede ser negativo.\n" << RESET;
+                } else if (petDiaUtilizado > limiteDiarioTipo) {
+                    cout << ROJO << "    [!] La cantidad utilizada (" << petDiaUtilizado
+                         << " uds) supera el limite diario permitido (" << limiteDiarioTipo
+                         << " uds). La cantidad es incorrecta. Ingrese un valor valido.\n" << RESET;
+                    petDiaUtilizado = -1.0;
                 }
             }
 
@@ -361,6 +387,11 @@ int main() {
                 } else if (petDiaDesperdiciado > petDiaUtilizado) {
                     cout << ROJO << "    [!] El desperdicio (" << petDiaDesperdiciado
                          << ") no puede superar lo utilizado (" << petDiaUtilizado << ").\n" << RESET;
+                    petDiaDesperdiciado = -1.0;
+                } else if (petDiaDesperdiciado > limiteDiarioTipo) {
+                    cout << ROJO << "    [!] El desperdicio (" << petDiaDesperdiciado
+                         << " uds) supera el limite diario permitido (" << limiteDiarioTipo
+                         << " uds). La cantidad es incorrecta.\n" << RESET;
                     petDiaDesperdiciado = -1.0;
                 }
             }
@@ -403,8 +434,11 @@ int main() {
             if (petMinDia < 0 || petDiaUtilizado < petMinDia) petMinDia = petDiaUtilizado;
 
             if (petDiaDesperdiciado > mayorDesperdicio) {
-                mayorDesperdicio    = petDiaDesperdiciado;
-                diaMayorDesperdicio = dia;
+                mayorDesperdicio = petDiaDesperdiciado;
+                diasMayorDesperdicio.clear();
+                diasMayorDesperdicio.push_back(dia);
+            } else if (petDiaDesperdiciado == mayorDesperdicio && mayorDesperdicio > 0) {
+                diasMayorDesperdicio.push_back(dia);
             }
         }
 
@@ -474,8 +508,12 @@ int main() {
         cout << "  Promedio desperdiciado/dia: " << AMARILLO << promedioDiarioDesperdiciado << " uds\n" << RESET;
 
         cout << "\n" << NEGRITA << CIAN << "  Estadisticas:\n" << RESET;
-        cout << "  Dia mayor desperdicio     : " << AMARILLO << "Dia " << diaMayorDesperdicio
-             << " (" << mayorDesperdicio << " uds)\n" << RESET;
+        cout << "  Dias mayor desperdicio    : " << AMARILLO;
+        for (int i = 0; i < diasMayorDesperdicio.size(); i++) {
+            if (i > 0) cout << ", ";
+            cout << "Dia " << diasMayorDesperdicio[i];
+        }
+        cout << " (" << mayorDesperdicio << " uds)\n" << RESET;
         cout << "  Max PET utilizado en dia  : " << VERDE   << petMaxDia << " uds\n" << RESET;
         cout << "  Min PET utilizado en dia  : " << AZUL    << petMinDia << " uds\n" << RESET;
 
